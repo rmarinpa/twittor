@@ -7,9 +7,9 @@ var swReg;
 if ( navigator.serviceWorker ) {
 
 
-    if ( url.includes('localhost') ) {
-        swLocation = '/sw.js';
-    }
+    if(url.includes('herokuapp')){swLocation = '/sw.js';}
+
+
 
 
     window.addEventListener('load', function() {
