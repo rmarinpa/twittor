@@ -23,6 +23,10 @@ router.get('/', function (req, res) {
 
 // Post mensaje
 router.post('/', function (req, res) {
+  
+
+  // console.log( req.body.lat );
+  // console.log( req.body.lng );
 
   const mensaje = {
     mensaje: req.body.mensaje,

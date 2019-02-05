@@ -6,9 +6,11 @@ var swReg;
 
 if ( navigator.serviceWorker ) {
 
+
   if (url.includes('herokuapp')) {
           swLocation = '/sw.js';
       }
+
 
     window.addEventListener('load', function() {
 
@@ -74,10 +76,15 @@ var foto = null;
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
 
-const camara = new Camara($('#player')[0]);
+// Init de la camara class
+// document.getElementById('player');
+const camara = new Camara( $('#player')[0] );
+
+
+
 // ===== Codigo de la aplicación
 
-function crearMensajeHTML(mensaje, personaje, lat, lng,foto) {
+function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
 
     // console.log(mensaje, personaje, lat, lng);
 
@@ -99,10 +106,10 @@ function crearMensajeHTML(mensaje, personaje, lat, lng,foto) {
                 `;
 
     if ( foto ) {
-    content += `
-          <br>
-            <img class="foto-mensaje" src="${ foto }">
-     `;
+        content += `
+                <br>
+                <img class="foto-mensaje" src="${ foto }">
+        `;
     }
 
     content += `</div>
@@ -259,6 +266,7 @@ postBtn.on('click', function() {
     .then( res => console.log( 'app.js', res ))
     .catch( err => console.log( 'app.js error:', err ));
 
+
     crearMensajeHTML( mensaje, usuario, lat, lng, foto );
 
     foto = null;
@@ -274,6 +282,7 @@ function getMensajes() {
         .then( posts => {
 
             console.log(posts);
+
             posts.forEach( post =>
                 crearMensajeHTML( post.mensaje, post.user, post.lat, post.lng, post.foto ));
         });
@@ -476,17 +485,23 @@ function mostrarMapaModal(lat, lng) {
 
 // Obtener la geolocalización
 btnLocation.on('click', () => {
-    $.mdtoast('Cargando Mapa...',{
-        interaction:true,
-        interactionTimeout:2000,
-        actionText:'Ok!'
-    })
-    console.log('Botón geolocalización');
-    navigator.geolocation.getCurrentPosition(pos => {
-        console.log(pos);
-        mostrarMapaModal(pos.coords.latitude, pos.coords.longitude);
+
+    // console.log('Botón geolocalización');
+    $.mdtoast('Cargando mapa...', {
+        interaction: true,
+        interactionTimeout: 2000,
+        actionText: 'Ok!'
+    });
+
+
+    navigator.geolocation.getCurrentPosition( pos => {
+
+        console.log( pos );
+        mostrarMapaModal( pos.coords.latitude, pos.coords.longitude );
+
         lat = pos.coords.latitude;
         lng = pos.coords.longitude;
+
     });
 
 });
@@ -497,9 +512,12 @@ btnLocation.on('click', () => {
 // usamos la funcion de fleca para prevenir
 // que jQuery me cambie el valor del this
 btnPhoto.on('click', () => {
+
+    console.log('Inicializar camara');
     contenedorCamara.removeClass('oculto');
 
     camara.encender();
+
 });
 
 
@@ -507,45 +525,49 @@ btnPhoto.on('click', () => {
 btnTomarFoto.on('click', () => {
 
     console.log('Botón tomar foto');
+
     foto = camara.tomarFoto();
 
     camara.apagar();
 
+    // console.log(foto);
 
 });
 
 
 // Share API
 
-//if (navigator.share){
-//    console.log('navegador lo soporta');
-//}
-//else{
-//    console.log('navegador no lo soporta');
-//}
+// if ( navigator.share ) {
+//     console.log('Navegador lo soporta');
+// } else {
+//     console.log('Navegador NO lo soporta');
+// }
 
-timeline.on('click','li',function(){
-    let tipo=$(this).data('tipo');
-    let lat=$(this).data('lat');
-    let lng =$(this).data('lng');
+timeline.on('click', 'li', function() {
+
+    // console.log(  $(this)  );
+
+    let tipo    = $(this).data('tipo');
+    let lat     = $(this).data('lat');
+    let lng     = $(this).data('lng');
     let mensaje = $(this).data('mensaje');
-    let user = $(this).data('user');
+    let user    = $(this).data('user');
 
-    console.log({tipo,lat,lng,mensaje,user});
+    console.log({ tipo, lat, lng, mensaje, user  });
 
-    const shareOpt = {
-        title:user,
+
+    const shareOpts = {
+        title: user,
         text: mensaje
     };
 
-    if (tipo == 'mapa'){
-        shareOpt.text = 'Mapa';
-        shareOpt.url = `https://www.google.com/maps/@${lat},${lng},15z`;
-
+    if ( tipo === 'mapa' ) {
+        shareOpts.text = 'Mapa';
+        shareOpts.url  = `https://www.google.com/maps/@${ lat },${ lng },15z`;
     }
-        navigator.share(shareOpt)
-          .then(() => console.log('Successful share'))
-          .catch((error) => console.log('Error sharing', error));
 
+    navigator.share(shareOpts)
+      .then(() => console.log('Successful share'))
+      .catch((error) => console.log('Error sharing', error));
 
 });
